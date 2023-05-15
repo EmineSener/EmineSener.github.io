@@ -9,29 +9,17 @@
         * {
             margin: 0;
             padding : 0;
-            
         }
-        
-
-        #enemy{
-            display: none;
-        }
-        #fire{
-            display:none;
-        }
-        #coin{
-            display:none;
-        }
-        #heart , #ground{
+        /* oyunda gerekli iconlar gorunmez sekilde html e yerelstirildi */
+        #heart , #ground , #coin, #fire, #enemy{
             display:none
-        
         }
-
+        /*  giris ekrani background*/
         body{
-            background-image: url("images/giris.png");
+            background-image: url("images/SaveYourCity.png");
             background-size: cover; 
         }
-
+        /*  */
         .my-button {
             background-color: #b4922a;
             border: none;
@@ -43,7 +31,6 @@
             font-size: 16px;
             cursor: pointer;
             border-radius: 4px;
-
             position: absolute;
             
              }
@@ -72,11 +59,11 @@
     <canvas id="canvas"></canvas>    
     <div id="container"></div>  
     
-    <audio id="myAudio" autoplay>
+    <audio id="myAudio" autoplay loop >
         <source src="./audio/giris_muzik.mp3" autoplay loop>
     </audio>
          
-    <audio id="gameAudio" autoplay>
+    <audio id="gameAudio" autoplay loop >
         <source src="./audio/gamemusic.mp3" autoplay loop>
     </audio>
 
@@ -86,6 +73,8 @@
     <img src="images/character/heart.png"  id="heart">
     <img src="images/ground1.png"  id="ground">
 
+    
+
     <button id="start-button" class="my-button" style="top: 450px;left: 120px;">Oyuna Başla</button>
 
     <button id="information-button" class="my-button" style="top: 500px;left: 120px;" >Oyun Bilgisi</button>
@@ -93,8 +82,11 @@
     <button id="audio-button" class="my-button" style="top: 550px;left: 120px;">Ses</button>
 
     <!-- Giris Sayfasi -->
+
+   
+
     <div class="info-box" id="info-box">
-        <h1>Save Your City</h1>
+       
         <br> <br> <br> 
         <p>Save Your City oyununda amaç düşman şehrinden gelen uzay araçlarının şehrini istila etmesini korumak </p>
         <br> <br> 
@@ -108,17 +100,13 @@
            Karakterin şehrinde yerçekimi var.Bu yüzden karakter eğer gerekli zıplama ya da blok üzerinde kalma durumlarını sağlayamazsa 
            düşecek ve oyunu kaybedecek.  <br>
            Karakter şehrinin 5 adet canı bulunmaktadır ve bunlar kalp icon'u ile temsil  ediliyor.  <br>
-            
         </p>
         
     </div>
 
 </body>
 <script>
-
-    
-    
-    // canvas elementini olusturur
+ // canvas elementini olusturur
     const canvas = document.querySelector('canvas');
     const c = canvas.getContext('2d');
         
@@ -126,33 +114,30 @@
     canvas.height = window.innerHeight-10;
     console.log(canvas.width,canvas.height);
 
-    // oyunda yercekimi var
-    const gravity = 0.2;
+    // oyunda yercekimi var,karakterin dusmesini saglar
+    const gravity = 0.4;
 
-
-    // background 
+    // background olusturma classı 
     class Sprite {
         constructor({position,imageSrc}) {
             this.position = position ;
             this.image=new Image();
             this.image.src = imageSrc;
-            
-           
+            // html de bulunun display none backgroundu kullanir
         }
 
         draw(){
+            // image yuklenmezse calismayacak
             if(!this.image) return;
-            c.drawImage(this.image,this.position.x, this.position.y,canvas.width,canvas.height);
-            
+            c.drawImage(this.image,this.position.x, this.position.y,canvas.width,canvas.height);     
         }
 
         update() {
             this.draw();
         }
-
     }
 
-    // a ve d basılı mı kontrol edilir.Surekli hareketi onleyebilmek  icin.w gerek yok cunku yercekimi var
+    // a ve d ,w basılı mı kontrol edilir.Surekli hareketi onleyebilmek  icin.
     const keys = {
         d: {
             pressed: false,
@@ -179,8 +164,7 @@
         
     });
 
-    
-
+    // karakteri hareketi tuslari
     window.addEventListener('keydown' , (event) => {
         switch(event.key){
             case 'd':
@@ -190,16 +174,17 @@
                 keys.a.pressed = true;
                 break;
             case 'w':
-                player.velocity.y = -5;
+                player.velocity.y = -10;
                 break;
             case  String.fromCharCode(32):{
                 keys.space.pressed=true;
                 player.shootTop();
                 break;
             }
+            // space tusuyla mermi atımı
         }
     })
-
+    // tusların uzun basımı icin keyup keydown iki durumda kontrol edilir
     window.addEventListener('keyup' , (event) => {
         switch(event.key){
             case 'd':
@@ -215,7 +200,8 @@
     })
 
     // block matris
-    // her bir veri 50px 50px bir kare belirtir
+    // her bir veri 25px 16px bir kare belirtir ->karakter alanına block cizebilmek ve carpısma kontrolu icin kullanılacak
+    // 0->block yok   1->block var 
     const block = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0,
@@ -243,22 +229,24 @@
     0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
     ];
 
+    // blocklari matrise cevirmek icin ->matris ile de dikdortgensel alan px olarak ifade edilir
     const block2D = [];
-
     for(let i = 0;i<block.length; i += 20){
         block2D.push(block.slice(i, i + 20));
     }
 
+    // karakterin oyun surecinde ustundu konumlandıgı bloklar
     class CollisionBlock {
         constructor({position, height = 16}) {
             this.position = position ;
             this.width = 25 ;
             this.height = height;
+            // bloklar icin image kullanildi
             this.image = document.getElementById('ground');
         }
 
         draw(){
-
+            // blok cizimi
             c.drawImage(this.image,
             0,
             0,
@@ -269,18 +257,13 @@
             this.width,
             this.height);
 
-
-            //  c.fillStyle = 'rgba(0, 255 ,0 , 0.5)';
-            //  c.fillRect(this.position.x, this.position.y, this.width, this.height);
             
         }
-
         update() {  
             this.draw();
         }
-
     }
-
+    // data matrisisnde verilen 1 lerin oldugu yere blok olustururr
     const CollisionBlocks = [];
     block2D.forEach((row,y) => {
         row.forEach((symbol, x) => {
@@ -297,7 +280,7 @@
         })
     } 
     )
-
+    // olusturlan bloklara carpısma olup olmadıgını tespit etmek icin ->karakter ve blok arası icin kullanılacak
     function collision({
         object1,
         object2
@@ -319,19 +302,18 @@
             // px basına hız
             this.speed = 3;
             this.markedForDeletion = false;
+            // mermi icinde html sayafaya gomulmus fire kullanilacak
             this.image = document.getElementById('fire');
         }
-
         update(){
+            // mermi hizi surekli artacak
             this.x +=this.speed;
             //dusmanlarin oyun alanı disinda vurulmasını engeller 
             if(this.x > canvas.width*(0.8)) this.markedForDeletion = true;
-
         }
 
         draw(){
-            // c.fillStyle = "yellow";
-            // c.fillRect(this.x, this.y, this.width, this.height);
+            // mermiyi cizer
             c.drawImage(this.image,
             0,
             0,
@@ -340,16 +322,19 @@
             this.x,
             this.y, 
             this.width,
-            this.height);
-            
+            this.height);   
         }
     }
+
+    // oyun bilgileri icin olusturuldu
     class Text{
         constructor(){
             this.fontSize = 25;
             this.fontFamily = 'Helvetica';
             this.color = 'yellow';
+            // alani 5 dusman isgal edeene kadar oyun devam eder->bu 5 limiti kalp iconuyla temsil edilir
             this.image = document.getElementById('heart');
+            // herat boyut ve komutlari
             this.width = 35;
             this.height = 28;
             this.x =70;
@@ -357,7 +342,7 @@
             
         }
         draw(score, gameStatus,animationId){
-
+            // kac dusman isgal etme hakkın kaldı bilgisi
             for(let i = 0;i<player.lives;i++){
                 c.drawImage(this.image,
                 0,
@@ -380,66 +365,66 @@
             }
             c.textAlign ="center";
             
-            // game over
+            // oyun durumu 
             if(!gameStatus){
-                // c.textAlign ="center";
+                // gameStatus->true ise oyun devam eder 
+                // oyun biterse scor da yazdırılır
+                // score = kac dusman oldurdun
                 c.fillText("You died!",900, 500);
                 c.fillText("Your score:" +score,1100, 500);
                 console.log("You died");
 
+                // html sayfada buton olusturur restart islemi icin
                 var button = document.createElement("button");
 
-                // Butonun metni ve özellikleri ayarlanır
-                // button.innerHTML = "Tıkla";
+                // Butonun metni ve özellikleri 
                 button.id = "myButton";
                 button.className = "myButtonClass";
                 let game =document.getElementById(canvas);
-                // canvas.style.display ="none";
-
-                // Buton elementi, belirli bir HTML elementine eklenir
+                // html sayafada bulunan container id 'li div'e butonu ekler 
                 var container = document.getElementById("container");
                 container.appendChild(button);
+                // gamestatus false olması durumunda animasyonu ve muzuigi duruduurr
                 cancelAnimationFrame(animationId);
                 gameAudio.pause();
                 
-                c.fillStyle = "blue";
-                c.fillRect(900, 590, 100, 40);
+                c.fillStyle = "rgba(255,0,0,0.5)";
+                c.fillRect(950, 590, 100, 40);
 
                 c.fillStyle = "white";
                 c.font = "16px Arial";
-                c.fillText("Restart", 950, 620);
+                c.fillText("Restart", 990, 620);
 
                 
-
+                // olsuturulan butona tıklandıgını kontrol eder
                 window.addEventListener("click", function(event) {
                     var rect = canvas.getBoundingClientRect();
                     var mouseX = event.clientX - rect.left;
                     var mouseY = event.clientY - rect.top; 
 
                     if (
-                        mouseX >= 900 &&
+                        mouseX >= 950 &&
                          mouseX <= 900 + 100 &&
                         mouseY >= 590 &&
                          mouseY <= 590 + 40
                     ) {
-                         // Butona tıklandığında yapılacak işlemler buraya yazılabilir
+                                // sayfayı yeniden yukler 
                                  window.location.reload();
+                                //  aslında amac buydu ama calismadi
                                 //  animate(0)
                                 // location.reload();
                     }
                 });
-
             }  
-            
-            
-
         }
     }
 
+    // ekranın sag taraından gelen dusmanlar class'ı
     class Enemy{
         constructor(){
             this.x = canvas.width;
-            this.speedX = Math.random()*(-2);
+            // dusman hizlari rastgele belirlenir ve sadece sola dogru olmasi saglanir
+            this.speedX = Math.random()*(-1.5);
             this.markedForDeletion = false;
             this.width = 48;
             this.height = 48;
@@ -448,20 +433,28 @@
             this.image = document.getElementById('enemy');
             this.frameX = 0;
             this.frameY = 0;
+            // hareketli bir dusmsn olusturabilmek icin veriler 
+            // asset teki poz sayısı
             this.maxFrame = 3;
+            // bu iki degisken dusmanın gozun algılamayacagı kadar hızlı hareket etmesini engeller
             this.elapsedFrames = 0;
             this.frameBuffer = 18;
         }
 
         update(){
+            // surekli pozisyon degistirir
             this.x += this.speedX;  
+            // alanı terk eden enemey silinecek olarak isaretlenir
             if(this.x +this.width < 0) this.markedForDeletion = true;
             
         }
 
         draw(){
+            // dusman cizizmi
 
+            // elapsed artınca degismeye yaklasiliyor 
             this.elapsedFrames++;
+            // bu islem sayesinde cok hızlı degsim onlenir
             if(this.elapsedFrames % this.frameBuffer === 0){
                 if(this.frameX <this.maxFrame){
                     this.frameX++;
@@ -481,10 +474,11 @@
              this.height);
         }
     }
-
+    // eger kaarkter yanlıslıkla merm isiabet ettirmezse arttırmaya yarayan bonuslar 
     class Bonus{
         constructor(){
             this.x = canvas.width;
+            // bonus hızıları da rastegele belirlendi 
             this.speedX = Math.random()*(-1);
             this.markedForDeletion = false;
             this.width = 48;
@@ -506,21 +500,8 @@
             
         }
 
-        draw(){
-            
-            // c.fillStyle = "yellow";
-            // c.fillRect(this.x, this.y, this.width, this.height);
-            
-        //     this.elapsedFrames++;
-        //     if(this.elapsedFrames % this.frameBuffer === 0){
-        //         if(this.frameX <this.maxFrame){
-        //             this.frameX++;
-        //         }else{
-        //             this.frameX = 0;
-        //         }
-        //     }
-           
-        
+        draw(){          
+        // bonuzları cizer
             c.drawImage(this.image,
             0,
             0,
@@ -529,9 +510,7 @@
             this.x,
             this.y, 
             this.width,
-            this.height);
-            
-        
+            this.height);     
         }
     }
 
@@ -543,14 +522,20 @@
                 x: 0,
                 y: 0
             }
-            
+            // ana karaakter bloklari 
             this.CollisionBlocks = CollisionBlocks;
+            // mermiler dizide  tutulacak
             this.projectiles = [];
+            // mermi miktarı baslangıc
             this.ammo = 20;
+            // oyun verilerini yazan class olan Text nesnesi 
             this.ammo_text = new Text();
+            // dusmanlar dizisi
             this.enemies = [];
+
             this.newEnemyTimer = 0;
             this.newEnemyInterval = 2000;
+            // game status false olana dek oyundevam ede r
             this.gameStatus = true;
             this.score = 0;
             this.win = 15;
@@ -558,14 +543,16 @@
             this.bonus_ammo = [];
             this.newBonusTimer = 0;
             this.newBonusInterval = 3000;
+            // dusman isgal limiti
             this.lives = 5;
 
-            // this.image =document.getElementById('player');
+            // asssetler icin 
             this.frameX = 0;
             this.frameY = 0;
             this.maxFrame = 5;
             this.frame = true;
 
+            // asset boyutu ve pozisyonu
             this.image=new Image();
             this.image.src = imageSrc;
             this.frameRate = frameRate;
@@ -576,8 +563,8 @@
             this.frameBuffer = frameBuffer;
             this.elapsefFrames = 0;
 
+            // cesitli durus->Yurumek,atıs yapmak durmak arasında gecisleri tutar
             this.animations = animations;
-
             for(let key in this.animations){
                 const image = new Image();
                 image.src = this.animations[key].imageSrc;
@@ -586,6 +573,7 @@
             }
  
         }
+        // cesitli durus->Yurumek,atıs yapmak durmak arasında gecisleri yapar
         swapSprite(key){
             if(this.image === this.animations[key]) return
             this.image = this.animations[key].image;
@@ -594,8 +582,9 @@
         }
 
         draw(){
-
+            // kod hatasını onlemek icin 
             if(!this.image) return;
+            // bir asset fotosundaki her bir durus bilgileri
             const cropbox = {
                 position:{
                     x:this.currentFrame * (this.image.width/this.frameRate),
@@ -604,6 +593,7 @@
                 width: this.image.width/this.frameRate,
                 height: this.image.height,
             }
+            // asset pozisyounu cizer
             c.drawImage(this.image,
              cropbox.position.x,
              cropbox.position.y,
@@ -614,29 +604,31 @@
              this.width ,  // this.frameRat, 
              this.height);
             
-            
+            // mermiler bonuslar ve dusmanların cizimleri
             this.projectiles.forEach(projectile => {
                 projectile.draw();        
             });
-
             this.bonus_ammo.forEach(bonus =>{
                 bonus.draw();
             });
-
            this.enemies.forEach(enemy =>{
                 enemy.draw();
             });
-
-            
-
         }
-
+        // oyun dongusu 
+        // perAnimateTime ->iki dongu arasi sure 
+        // animationıd game Status false olmaı durumdunda animasyonu durdurur
         update(perAnimateTime,player,animationId){
             //  this.draw();
+            // asset pozisyonlarında gecis
             this.updateFrames();
+            // yatay eksenede hizlanama->istenildigi takdirde
             this.position.x+=this.velocity.x;   
+            // block carpisma 
             this.checkHorizontalCollision()
+            // karaktere yer cekimi uygula
             this.gravity_apply();
+            // bloklara dikey carpısma kontrol
             this.checkCollision();   
             this.perAnimateTime = perAnimateTime;
             // mermileri islemek
@@ -645,17 +637,19 @@
             });
             this.animationId = animationId;
             
-            
+            // dusman ve mermi dongusu
             this.enemies.forEach(enemy =>{
                 enemy.update();
-
+                    // karakter duserse oyun biter
                     if(this.position.y > 700){
                         // oyun bitti kaybettin
                         this.gameStatus = false;
                         console.log("oyun bitti");
                         
                     }
+                    // dusman isgal ederse csn azalır 0 a inerse oyun bitevrr
                     if(enemy.x<500){
+                        // karakter alanına giren dusman yok olur
                         enemy.markedForDeletion = true;
                         this.lives--;
                         if(this.lives == 0){
@@ -664,7 +658,7 @@
                        
                     }
                                     
-                
+                // mermi ve dusman temas durumu ->temas varsa score artar
                 this.projectiles.forEach(projectile => {
                     if(this.checkCollisionPlayer(projectile,enemy)){
                         enemy.markedForDeletion = true;
@@ -676,6 +670,7 @@
             });
         })
 
+        // bonuslar mermiye degmeden karakter alanına girerse mermi miktarı +2
         this.bonus_ammo.forEach(bonus =>{
                 bonus.update();
 
@@ -684,8 +679,6 @@
                          bonus.markedForDeletion = true;
                           this.ammo +=2;
                     }
-                                    
-                
                 this.projectiles.forEach(projectile => {
                     if(this.checkCollisionPlayer(projectile,bonus)){
                         bonus.markedForDeletion = true;
@@ -696,11 +689,12 @@
         })
         this.draw();
 
-            
+        
             this.bonus_ammo = this.bonus_ammo.filter(bonus => !bonus.markedForDeletion);
-
+            // silinen dusmanları dusman dizisinden cikart 
             this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion);
 
+            // belirli zaman aralıklarına (animatin cyle time a gore ) enemy uret 
             if(this.newEnemyTimer >this.newEnemyInterval && this.gameStatus){
                 this.newEnemy();
                 this.newEnemyTimer = 0;
@@ -709,7 +703,7 @@
                 this.newEnemyTimer += perAnimateTime;
             }
 
-            // bonus
+            // bonus uret
             if(this.newBonusTimer >this.newBonusInterval && this.gameStatus){
                 this.newBonus();
                 this.newBonusTimer = 0;
@@ -718,10 +712,11 @@
                 this.newBonusTimer += perAnimateTime;
             }
 
-        
+            // oyun bilgilerini kaydet oyun durumunnu kontrol et 
             this.ammo_text.draw(this.score,this.gameStatus,this.animationId);
         }
 
+        // enemy ve bonus dizilerine yeni uyeler eklenir
         newEnemy(){
             this.enemies.push(new Enemy());
         }
@@ -730,6 +725,7 @@
             this.bonus_ammo.push(new Bonus());
         }
 
+        // asset duruslarını degistirir
         updateFrames(){
             this.elapsefFrames++;
             if(this.elapsefFrames % this.frameBuffer === 0){
@@ -740,7 +736,7 @@
     } 
 
         
-
+        // blok temas kontrol dikey 
         checkCollisionPlayer(player,object){
             return( player.x <object.x +object.width && 
                     player.x + player.width >object.x&&
@@ -748,11 +744,10 @@
                     player.height +player.y >object.y
             )            
         }
-
+         // blok temas kontrol yatay ->gerekirse
         checkHorizontalCollision(){
             for(let i = 0; i<CollisionBlocks.length; i++){
                 const CollisionBlock =CollisionBlocks[i] ;
-
                 if(
                     collision({
                         object1: this,
@@ -798,7 +793,7 @@
                 }
             }
         }
-
+        // mermi at ve mermi sayısını azalt 
         shootTop(){
             if(this.ammo >0){ 
                 this.projectiles.push(new Projectile(this.position.x+100,this.position.y+50)); 
@@ -806,11 +801,14 @@
             }           
         }
     }
+
+    // ana karakter
     const player = new Player({
        position:{ x: 200,
         y: 0
        },
        CollisionBlocks,
+    //    ana karakterin cesitli hareketleri
        animations: {
             Idle:{
                 imageSrc:'./images/character/Idle.png',
@@ -866,10 +864,11 @@
     }
 
         )
-
+        // animasyonu olusturu 
         const animationId =window.requestAnimationFrame(animate);
         // player.update(perAnimateTime,player,animationId);
         player.velocity.x = 0;
+        // tuslar ve karakter hareketleri
         if(keys.d.pressed && player.position.x  < 500-30 ) {    
             player.swapSprite('Run');
             player.velocity.x = 1;
@@ -891,6 +890,7 @@
         if(player.velocity.y <0 ) player.swapSprite('Jump');
         player.update(perAnimateTime,player,animationId);
     }
+    // html ye gomulmus olan giris ekrani butonlatı
     
     var startButton = document.getElementById("start-button");
     var informationButton = document.getElementById("information-button");
@@ -902,11 +902,17 @@
     music1.addEventListener("click",sound)
     var gameAudio = document.getElementById("gameAudio");
 
+    // bilgi kutusunu acar 
     function informationGame(){
         infoBox.style.display = "block";   
                     
     }
-    
+    // kapatır
+    function informationGameClose(){
+        infoBox.style.display = "none";   
+                    
+    }
+    // giris ekrani butonlarını yok ederek animasyonu baslatir
     function startGame() {
       startButton.style.display = "none";
       informationButton.style.display = "none";
