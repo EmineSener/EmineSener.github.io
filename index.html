@@ -21,7 +21,7 @@
         }
         /*  */
         .my-button {
-            background-color: #b4922a;
+            background-color: #97348a;
             border: none;
             color: white;
             padding: 10px 20px;
@@ -41,15 +41,15 @@
             left: 120px;
         }
         .info-box {
-            background-color: #887d1a;
+            background-color: #7e4972;
             border: 1px solid #ccc;
             padding: 10px;
             border-radius: 4px;
             display: none;
 
             position: absolute;
-            top: 350px;
-            left: 520px;
+            top: 150px;
+            left: 220px;
             z-index: 1;
         }
     </style>
@@ -86,13 +86,16 @@
    
 
     <div class="info-box" id="info-box">
-       
+        
+        <h1>Save Your City</h1>
         <br> <br> <br> 
         <p>Save Your City oyununda amaç düşman şehrinden gelen uzay araçlarının şehrini istila etmesini korumak </p>
         <br> <br> 
         <h3>Karakter</h3>
         <p>Karakter "a" tuşuyla sola "d" tuşuyla sağa hareket ederken "w" tuşuyla ise zıplamaktadır <br>
            Space tuşuyla ise atış yapabilir.
+           Karakterin amacı dusmanları vurmak bonusları ise vurmamamktır.
+           Bonuslar vurulmazsa yok olmaz ve karakter alanına girdiklerinde mermi miktarı artar 
         </p>
         <h3>Karakterin Şehri</h3>
         <p>Karakter kendi şehrinden çıkamaz. <br>
@@ -101,7 +104,16 @@
            düşecek ve oyunu kaybedecek.  <br>
            Karakter şehrinin 5 adet canı bulunmaktadır ve bunlar kalp icon'u ile temsil  ediliyor.  <br>
         </p>
-        
+        <h3>Düşman Şehri</h3>
+        <p>
+            Düşmanlar rastgele hızlarla rastgele yerlerden gelirler . <br>
+            Mermi ile bir kez temas etmeleri durumunda yok olurlar <br>
+            5 dusmanın karakter alnına girmesi durumunda oyun biter <br>
+            Dusman sehrinde yer cekimi yoktur.
+        </p>
+
+        <button class="my-button" id="closeInfoButton">Bilgi Kutusunu Kapat</button>
+  
     </div>
 
 </body>
@@ -901,7 +913,8 @@
     informationButton.addEventListener("click", informationGame);
     music1.addEventListener("click",sound)
     var gameAudio = document.getElementById("gameAudio");
-
+    var infoCloseButton = document.getElementById("closeInfoButton")
+    infoCloseButton.addEventListener("click", informationGameClose);
     // bilgi kutusunu acar 
     function informationGame(){
         infoBox.style.display = "block";   
