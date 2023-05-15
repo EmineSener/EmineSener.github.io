@@ -75,6 +75,10 @@ Karakterin kendi alanında aşağıya düşmesi ya da 5 düşmanın adaya girmes
 Gerekli bilgiler verilir.
 Bir 'restart' butonu oluşur ve istenidiği takdirde oyun yeniden oynanır.
 
+### Oyun Linki
+
+https://eminesener.github.io/
+
 
 
 
