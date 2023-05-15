@@ -79,7 +79,9 @@ Bir 'restart' butonu oluşur ve istenidiği takdirde oyun yeniden oynanır.
 
 https://eminesener.github.io/
 
+### Oyun YouTube Videosu
 
+https://www.youtube.com/watch?v=vfAAka3Tk_4
 
 
 
